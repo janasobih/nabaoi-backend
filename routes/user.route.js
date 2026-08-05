@@ -8,23 +8,22 @@ const {
   getUser,
 } = require("../controller/user.controller");
 
-// const { authnticate } = require("../middleware/auth.middleware");
+const { authenticate } = require("../middleware/auth.middleware");
+const { authorize } = require("../middleware/role.moddleware");
 
-// const { authorize } = require("../middleware/role.middleware");
+router.post("/", createUser("user"));
 
-router.post("/", createUser);
+router.post(
+  "/createadmin",
+  authenticate,
+  authorize("admin"),
+  createUser("admin"),
+);
 
-// router.post(
-//   "/createadmin",
-//   authnticate,
-//   authorize("admin"),
-//   createUser("admin"),
-// );
-
-router.patch("/:slug", updateUser);
+router.patch("/:slug", authenticate, updateUser);
 
 router.get("/:slug", getUser);
 
-router.get("/", getAllUsers);
+router.get("/", authenticate, authorize("admin"), getAllUsers);
 
 module.exports = router;

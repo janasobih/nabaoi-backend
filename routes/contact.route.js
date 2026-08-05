@@ -9,14 +9,17 @@ const {
   deleteContact,
 } = require("../controller/contact.controller");
 
-router.post("/", createContact);
+const { authenticate } = require("../middleware/auth.middleware");
+const { authorize } = require("../middleware/role.moddleware");
 
-router.patch("/:_id", updateContact);
+router.post("/", authenticate, authorize("admin"), createContact);
+
+router.patch("/:_id", authenticate, authorize("admin"), updateContact);
 
 router.get("/:_id", getOneContact);
 
 router.get("/", getAllContact);
 
-router.delete("/:_id", deleteContact);
+router.delete("/:_id", authenticate, authorize("admin"), deleteContact);
 
 module.exports = router;

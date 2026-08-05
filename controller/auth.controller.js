@@ -14,12 +14,8 @@ const signToken = (user) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(404).json({ error: " user not found" });
-  }
-
-  if (!(await user.correctPassword(password))) {
-    return res.status(401).json({ error: " invalid password" });
+  if (!user || !(await user.correctPassword(password))) {
+    return res.status(404).json({ error: " invalid email or password " });
   }
 
   const token = signToken(user);

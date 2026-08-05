@@ -9,9 +9,24 @@ const {
 
 const uploads = require("../middleware/multer.middleware");
 
-router.post("/", uploads.single("img"), createHome);
+const { authenticate } = require("../middleware/auth.middleware");
+const { authorize } = require("../middleware/role.moddleware");
 
-router.patch("/:_id", uploads.single("img"), updateHome);
+router.post(
+  "/",
+  uploads.single("img"),
+  authenticate,
+  authorize("admin"),
+  createHome,
+);
+
+router.patch(
+  "/:_id",
+  uploads.single("img"),
+  authenticate,
+  authorize("admin"),
+  updateHome,
+);
 
 router.get("/:_id", getHome);
 
