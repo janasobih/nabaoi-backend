@@ -1,15 +1,29 @@
 const Home = require("../model/home.model");
 const slug = require("slugify");
+const uploadToCloudinary = require("../middleware/cloudinary.middleware");
+
 exports.createHome = async (req, res) => {
   const { title, subTitle, tag } = req.body;
+
+  let imageUrl = null;
+
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.buffer, "nabaoi/home");
+
+    imageUrl = result.secure_url;
+  }
   const home = await Home.create({
     title,
     subTitle,
     tag,
     slug: slug(title),
-    img: req.file ? `/uploads/${req.file.filename}` : req.existingImage,
+    img: imageUrl,
   });
-  res.status(201).json({ messsage: "home created", data: home });
+
+  res.status(201).json({
+    message: "home created",
+    data: home,
+  });
 };
 
 exports.updateHome = async (req, res) => {
