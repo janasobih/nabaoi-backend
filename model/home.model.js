@@ -11,6 +11,10 @@ const homeSchema = new mongoose.Schema(
       required: true,
     },
 
+    slug: {
+      type: String,
+    },
+
     subTitle: {
       type: String,
       required: true,

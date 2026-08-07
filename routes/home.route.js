@@ -21,13 +21,13 @@ router.post(
 );
 
 router.patch(
-  "/:_id",
+  "/:slug",
   uploads.single("img"),
   authenticate,
   authorize("admin"),
   updateHome,
 );
 
-router.get("/:_id", getHome);
+router.get("/:slug", getHome);
 
 module.exports = router;
