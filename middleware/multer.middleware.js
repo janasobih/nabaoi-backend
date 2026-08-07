@@ -2,21 +2,12 @@ const multer = require("multer");
 
 const path = require("path");
 
-const fs = require("fs");
-
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  const allowed = [".jpg", ".jpeg", ".png"];
-
+  const allowed = [".jpg", ".png", ".jpeg", ".PNG"];
+  console.log(allowed.includes(ext), ext);
   if (!allowed.includes(ext)) {
-    return cb(new Error("Only images are allowed"));
-  }
-
-  const filePath = path.join(__dirname, "../uploads", file.originalname);
-
-  if (fs.existsSync(filePath)) {
-    req.existingImage = `/uploads/${file.originalname}`;
-    return cb(null, false);
+    return cb(new Error("Only imges are allowed"));
   }
 
   cb(null, true);
@@ -27,7 +18,7 @@ const storage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, Date.now() + "_" + file.originalname);
   },
 });
 
