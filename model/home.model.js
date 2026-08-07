@@ -13,6 +13,7 @@ const homeSchema = new mongoose.Schema(
 
     slug: {
       type: String,
+      unique: true,
     },
 
     subTitle: {
