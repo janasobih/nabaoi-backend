@@ -1,16 +1,27 @@
 const slug = require("slugify");
 const Category = require("../model/category.model");
+const uploadToCloudinary = require("../middleware/cloudinary.middleware");
 
 exports.createCategory = async (req, res) => {
   const { name, title, desc, isDeleted } = req.body;
+
+  let imageUrl = null;
+
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.buffer, "nabaoi/category");
+
+    imageUrl = result.secure_url;
+  }
+
   const category = await Category.create({
     name,
     slug: slug(name),
     title,
     desc,
     isDeleted,
-    img: req.file ? `/uploads/${req.file.filename}` : req.existingImage,
+    img: imageUrl,
   });
+
   res.status(201).json({
     message: "category created",
     data: category,
@@ -19,8 +30,15 @@ exports.createCategory = async (req, res) => {
 
 exports.updateCategory = async (req, res) => {
   const { slug } = req.params;
+  const updateData = {
+    ...req.body,
+  };
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.buffer, "nabaoi/category");
 
-  const category = await Category.findOneAndUpdate({ slug }, req.body, {
+    updateData.img = result.secure_url;
+  }
+  const category = await Category.findOneAndUpdate({ slug }, updateData, {
     new: true,
   });
 

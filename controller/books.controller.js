@@ -1,8 +1,15 @@
 const slug = require("slugify");
 const Books = require("../model/books.model");
+const uploadToCloudinary = require("../middleware/cloudinary.middleware");
 
 exports.createBooks = async (req, res) => {
   const { name, desc, stock, price, bookCategory, age } = req.body;
+  let imageUrl = null;
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.buffer, "nabaoi/books");
+
+    imageUrl = result.secure_url;
+  }
   const books = await Books.create({
     name,
     slug: slug(name),
@@ -14,17 +21,33 @@ exports.createBooks = async (req, res) => {
       from: Number(age.from),
       to: Number(age.to),
     },
-    img: req.file ? `/uploads/${req.file.filename}` : req.existingImage,
+    img: imageUrl,
   });
 
-  res.status(201).json({ message: "books created", data: books });
+  res.status(201).json({
+    message: "books created",
+    data: books,
+  });
 };
 
 exports.updateBook = async (req, res) => {
   const { slug } = req.params;
-  const books = await Books.findOneAndUpdate({ slug }, req.body, { new: true });
+  const updateData = {
+    ...req.body,
+  };
 
-  res.status(201).json({ message: "book updated", data: books });
+  if (req.file) {
+    const result = await uploadToCloudinary(req.file.buffer, "nabaoi/books");
+
+    updateData.img = result.secure_url;
+  }
+  const books = await Books.findOneAndUpdate({ slug }, updateData, {
+    new: true,
+  });
+  res.status(200).json({
+    message: "book updated",
+    data: books,
+  });
 };
 
 exports.getAllBooks = async (req, res) => {
