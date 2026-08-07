@@ -19,8 +19,7 @@ yarn-error.log*
 # Coverage
 coverage/
 
-# Uploads 
-uploads/
+
 
 # OS files
 .DS_Store
